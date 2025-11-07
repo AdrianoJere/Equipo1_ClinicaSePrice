@@ -301,7 +301,6 @@ namespace ClinicaSePrice.Forms
             dgv.DataSource = null;
             dgv.DataSource = lista;
         }
-
         private void Reservar()
         {
             if (cboPaciente.SelectedItem == null || cboProfesional.SelectedItem == null)
@@ -311,13 +310,38 @@ namespace ClinicaSePrice.Forms
                 return;
             }
 
+            // Fecha válida
+            if (dtpFecha.Value.Date < DateTime.Today)
+            {
+                MessageBox.Show("La fecha del turno no puede ser anterior a hoy.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             DateTime fh = dtpFecha.Value.Date + dtpHora.Value.TimeOfDay;
 
+            if (fh < DateTime.Now)
+            {
+                MessageBox.Show("La hora del turno debe ser futura.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Observación obligatoria
+            if (string.IsNullOrWhiteSpace(txtObs.Text))
+            {
+                MessageBox.Show("Debe ingresar una observación.", "Advertencia",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             Profesional prof = (Profesional)cboProfesional.SelectedItem;
+
+            // Validar superposición CORREGIDA
             bool existe = DataStore.Turnos.Any(t =>
                 t.Profesional == prof &&
                 t.FechaHora == fh &&
-                t.Estado == "Programado" || t.Estado == "Confirmado");
+                (t.Estado == "Programado" || t.Estado == "Confirmado"));
 
             if (existe)
             {
@@ -339,6 +363,7 @@ namespace ClinicaSePrice.Forms
             MessageBox.Show("Turno registrado correctamente.", "Éxito",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
+
         private void AcreditarTurno()
         {
             if (dgv.SelectedRows.Count == 0)
@@ -348,20 +373,19 @@ namespace ClinicaSePrice.Forms
                 return;
             }
 
-            var row = dgv.SelectedRows[0];
-            var vm = row.DataBoundItem as TurnoRow;
-
-            if (vm == null || vm.Ref == null)
-            {
-                MessageBox.Show("No se pudo identificar el turno seleccionado.", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
+            var vm = dgv.SelectedRows[0].DataBoundItem as TurnoRow;
 
             if (vm.Ref.Estado == "Cancelado")
             {
-                MessageBox.Show("No puede acreditar un turno que está cancelado.",
-                    "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("No puede acreditar un turno cancelado.", "Advertencia",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (vm.Ref.Estado == "Confirmado")
+            {
+                MessageBox.Show("Este turno ya está confirmado.", "Información",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
@@ -372,17 +396,15 @@ namespace ClinicaSePrice.Forms
                 return;
             }
 
-            var ok = MessageBox.Show("¿Acreditar al paciente seleccionado?",
-                                     "Confirmar acreditación",
-                                     MessageBoxButtons.YesNo,
-                                     MessageBoxIcon.Question);
-
-            if (ok == DialogResult.Yes)
+            if (MessageBox.Show("¿Confirmar el turno seleccionado?",
+                "Confirmar acreditación",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 vm.Ref.Estado = "Confirmado";
                 CargarTabla();
 
-                MessageBox.Show("Turno Confirmado correctamente.", "Información",
+                MessageBox.Show("Turno confirmado correctamente.", "Información",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
@@ -396,25 +418,23 @@ namespace ClinicaSePrice.Forms
                 return;
             }
 
-            var row = dgv.SelectedRows[0];
-            var vm = row.DataBoundItem as TurnoRow;
+            var vm = dgv.SelectedRows[0].DataBoundItem as TurnoRow;
 
-            if (vm == null || vm.Ref == null)
+            if (vm.Ref.Estado == "Confirmado")
             {
-                MessageBox.Show("No se pudo identificar el turno seleccionado.", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("No puede cancelar un turno ya confirmado.",
+                    "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            var ok = MessageBox.Show("¿Desea cancelar el turno seleccionado?",
-                                     "Confirmar",
-                                     MessageBoxButtons.YesNo,
-                                     MessageBoxIcon.Question);
-
-            if (ok == DialogResult.Yes)
+            if (MessageBox.Show("¿Desea cancelar el turno seleccionado?",
+                "Confirmar",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 vm.Ref.Estado = "Cancelado";
                 CargarTabla();
+
                 MessageBox.Show("Turno cancelado.", "Información",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
