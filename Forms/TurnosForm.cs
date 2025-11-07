@@ -212,7 +212,7 @@ namespace ClinicaSePrice.Forms
 
             var btnAcreditar = new Button
             {
-                Text = "Acreditar turno",
+                Text = "Confirmar turno",
                 Left = 180,
                 Top = 540,
                 Size = new Size(150, 30),
@@ -317,7 +317,7 @@ namespace ClinicaSePrice.Forms
             bool existe = DataStore.Turnos.Any(t =>
                 t.Profesional == prof &&
                 t.FechaHora == fh &&
-                t.Estado == "Programado" || t.Estado == "Acreditado");
+                t.Estado == "Programado" || t.Estado == "Confirmado");
 
             if (existe)
             {
@@ -379,10 +379,10 @@ namespace ClinicaSePrice.Forms
 
             if (ok == DialogResult.Yes)
             {
-                vm.Ref.Estado = "Acreditado";
+                vm.Ref.Estado = "Confirmado";
                 CargarTabla();
 
-                MessageBox.Show("Turno acreditado correctamente.", "Información",
+                MessageBox.Show("Turno Confirmado correctamente.", "Información",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
