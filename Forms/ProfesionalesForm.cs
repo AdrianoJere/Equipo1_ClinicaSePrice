@@ -240,12 +240,39 @@ namespace ClinicaSePrice.Forms
 
                 if (f.ShowDialog(this) == DialogResult.OK)
                 {
-                    if (string.IsNullOrWhiteSpace(txtNom.Text) || string.IsNullOrWhiteSpace(txtApe.Text) ||
-                        string.IsNullOrWhiteSpace(txtEsp.Text) || string.IsNullOrWhiteSpace(txtMat.Text) ||
+                    // VALIDAR CAMPOS
+                    if (string.IsNullOrWhiteSpace(txtNom.Text) ||
+                        string.IsNullOrWhiteSpace(txtApe.Text) ||
+                        string.IsNullOrWhiteSpace(txtEsp.Text) ||
+                        string.IsNullOrWhiteSpace(txtMat.Text) ||
                         string.IsNullOrWhiteSpace(txtMail.Text))
                     {
-                        MessageBox.Show("Complete todos los campos obligatorios.", "Advertencia",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("Complete todos los campos obligatorios.",
+                            "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    // Solo letras
+                    if (!txtNom.Text.All(char.IsLetter) || !txtApe.Text.All(char.IsLetter))
+                    {
+                        MessageBox.Show("Nombre y apellido solo pueden contener letras.",
+                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    // Email válido
+                    if (!txtMail.Text.Contains("@") || !txtMail.Text.Contains("."))
+                    {
+                        MessageBox.Show("El email no tiene un formato válido.",
+                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    // Horarios (mínimo 1)
+                    if (lstHorarios.Items.Count == 0)
+                    {
+                        MessageBox.Show("Debe agregar al menos un horario.",
+                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
 

@@ -91,38 +91,104 @@ namespace ClinicaSePrice.Forms
 
         private void Guardar()
         {
+            // ===== VALIDACIÓN: campos obligatorios =====
             if (string.IsNullOrWhiteSpace(txtNombre.Text) ||
                 string.IsNullOrWhiteSpace(txtApellido.Text) ||
                 string.IsNullOrWhiteSpace(txtDni.Text))
             {
-                MessageBox.Show("Complete los campos obligatorios (Nombre, Apellido, DNI).", "Advertencia",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Complete los campos obligatorios (Nombre, Apellido, DNI).",
+                    "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
+            // ===== VALIDACIÓN: solo letras en nombre y apellido =====
+            if (!txtNombre.Text.All(char.IsLetter) || !txtApellido.Text.All(char.IsLetter))
+            {
+                MessageBox.Show("Nombre y Apellido solo pueden contener letras.",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // ===== VALIDACIÓN: DNI numérico =====
+            if (!txtDni.Text.All(char.IsDigit))
+            {
+                MessageBox.Show("El DNI debe contener solo números.",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (txtDni.Text.Length < 7 || txtDni.Text.Length > 8)
+            {
+                MessageBox.Show("El DNI debe tener entre 7 y 8 dígitos.",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // ===== VALIDACIÓN: DNI repetido =====
             bool existe = DataStore.Pacientes.Any(p => p.Dni == txtDni.Text.Trim());
             if (existe)
             {
-                MessageBox.Show("Ya existe un paciente con ese DNI.", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Ya existe un paciente con ese DNI.",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
+            // ===== VALIDACIÓN: Fecha nacimiento válida =====
+            var fecha = dtpNacimiento.Value.Date;
+            var hoy = DateTime.Today;
+
+            if (fecha > hoy)
+            {
+                MessageBox.Show("La fecha de nacimiento no puede ser mayor a la fecha actual.",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (fecha < hoy.AddYears(-120))
+            {
+                MessageBox.Show("La fecha de nacimiento no es válida.",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // ===== VALIDACIÓN: Email =====
+            if (!string.IsNullOrWhiteSpace(txtEmail.Text))
+            {
+                if (!txtEmail.Text.Contains("@") || !txtEmail.Text.Contains("."))
+                {
+                    MessageBox.Show("El email no tiene un formato válido.",
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+
+            // ===== VALIDACIÓN: Teléfono numérico (si lo carga) =====
+            if (!string.IsNullOrWhiteSpace(txtTelefono.Text) &&
+                !txtTelefono.Text.All(char.IsDigit))
+            {
+                MessageBox.Show("El teléfono debe contener solo números.",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // ===== GUARDAR =====
             var nuevo = new Paciente
             {
                 Nombre = txtNombre.Text.Trim(),
                 Apellido = txtApellido.Text.Trim(),
                 Dni = txtDni.Text.Trim(),
-                FechaNacimiento = dtpNacimiento.Value.Date,
+                FechaNacimiento = fecha,
                 Email = txtEmail.Text.Trim(),
                 Telefono = txtTelefono.Text.Trim(),
                 Domicilio = txtDomicilio.Text.Trim()
             };
 
             DataStore.Pacientes.Add(nuevo);
+
             MessageBox.Show("Paciente registrado correctamente.", "Éxito",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             Close();
         }
+
     }
 }
