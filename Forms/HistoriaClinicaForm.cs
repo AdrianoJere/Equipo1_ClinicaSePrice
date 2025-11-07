@@ -42,16 +42,18 @@ namespace ClinicaSePrice.Forms
                 TextAlign = ContentAlignment.MiddleCenter
             };
 
-            var lblPac = new Label { Text = "Paciente:", Left = 30, Top = 80 };
+            // ===== CABECERA: Paciente =====
+            var lblPac = new Label { Text = "Paciente:", Left = 30, Top = 82, AutoSize = true };
             cboPaciente = new ComboBox
             {
                 Left = 110,
-                Top = 76,
+                Top = 80,                 // alineado con el label
                 Width = 250,
                 DropDownStyle = ComboBoxStyle.DropDownList
             };
             cboPaciente.SelectedIndexChanged += (s, e) => CargarHistorias();
 
+            // ===== GRID =====
             dgv = new DataGridView
             {
                 Location = new Point(30, 120),
@@ -67,31 +69,45 @@ namespace ClinicaSePrice.Forms
             dgv.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Diagnóstico", DataPropertyName = "Diagnostico", Width = 210 });
             dgv.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Indicaciones", DataPropertyName = "Indicaciones", Width = 250 });
 
-            var lblFecha = new Label { Text = "Fecha:", Left = 30, Top = 420 };
+            // ===== SECCIÓN DE CARGA (alineada en la misma línea) =====
+            int baseTop = 420;          // línea base para todos los controles de la fila
+            var lblFecha = new Label { Text = "Fecha:", Left = 30, Top = baseTop, AutoSize = true };
             dtpFecha = new DateTimePicker
             {
                 Left = 90,
-                Top = 420,  
+                Top = baseTop,           // alineado con lblFecha
                 Format = DateTimePickerFormat.Short,
                 Width = 120
             };
 
-            var lblMotivo = new Label { Text = "Motivo:", Left = 230, Top = 420 };
-            txtMotivo = new TextBox { Left = 290, Top = 416, Width = 180 };
+            var lblMotivo = new Label { Text = "Motivo:", Left = 230, Top = baseTop, AutoSize = true };
+            txtMotivo = new TextBox
+            {
+                Left = 290,
+                Top = baseTop,           // alineado con lblMotivo
+                Width = 180
+            };
 
-            var lblDiag = new Label { Text = "Diagnóstico:", Left = 490, Top = 420 };
-            txtDiagnostico = new TextBox { Left = 590, Top = 416, Width = 240 };
+            var lblDiag = new Label { Text = "Diagnóstico:", Left = 490, Top = baseTop, AutoSize = true };
+            txtDiagnostico = new TextBox
+            {
+                Left = 590,
+                Top = baseTop,           // alineado con lblDiag
+                Width = 240
+            };
 
-            var lblInd = new Label { Text = "Indicaciones:", Left = 30, Top = 460 };
+            // ===== Indicaciones (multilínea) =====
+            var lblInd = new Label { Text = "Indicaciones:", Left = 30, Top = 460, AutoSize = true };
             txtIndicaciones = new TextBox
             {
                 Left = 130,
-                Top = 456,
+                Top = 456,                // 4px arriba para centrar visualmente la altura del TextBox multilínea
                 Width = 700,
                 Height = 50,
                 Multiline = true
             };
 
+            // ===== Botones =====
             btnGuardar = new Button
             {
                 Text = "Guardar",
@@ -120,10 +136,10 @@ namespace ClinicaSePrice.Forms
 
             this.Controls.AddRange(new Control[]
             {
-                lblTitulo, lblPac, cboPaciente, dgv,
-                lblFecha, dtpFecha, lblMotivo, txtMotivo,
-                lblDiag, txtDiagnostico, lblInd, txtIndicaciones,
-                btnGuardar, btnCerrar
+        lblTitulo, lblPac, cboPaciente, dgv,
+        lblFecha, dtpFecha, lblMotivo, txtMotivo,
+        lblDiag, txtDiagnostico, lblInd, txtIndicaciones,
+        btnGuardar, btnCerrar
             });
         }
 
