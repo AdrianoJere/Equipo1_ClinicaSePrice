@@ -71,7 +71,7 @@ namespace ClinicaSePrice.Forms
             dtpFecha = new DateTimePicker
             {
                 Left = 90,
-                Top = 416,
+                Top = 420,  
                 Format = DateTimePickerFormat.Short,
                 Width = 120
             };

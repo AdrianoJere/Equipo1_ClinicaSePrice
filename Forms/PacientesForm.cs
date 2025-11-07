@@ -32,7 +32,6 @@ namespace ClinicaSePrice.Forms
             FormBorderStyle = FormBorderStyle.FixedDialog;
             StartPosition = FormStartPosition.CenterScreen;
 
-            // ===== Título =====
             lblTitulo = new Label
             {
                 Text = "Gestión de Pacientes",
@@ -43,14 +42,13 @@ namespace ClinicaSePrice.Forms
                 TextAlign = ContentAlignment.MiddleCenter
             };
 
-            // ===== Buscador =====
             txtBuscar = new TextBox
             {
                 Left = 40,
                 Top = 70,
                 Width = 300,
                 ForeColor = Color.Gray,
-                Text = "Buscar por nombre..."
+                Text = "Buscar por nombre/apellido..."
             };
             txtBuscar.GotFocus += (s, e) =>
             {
@@ -64,7 +62,7 @@ namespace ClinicaSePrice.Forms
             {
                 if (string.IsNullOrWhiteSpace(txtBuscar.Text))
                 {
-                    txtBuscar.Text = "Buscar por nombre...";
+                    txtBuscar.Text = "Buscar por nombre/apellido...";
                     txtBuscar.ForeColor = Color.Gray;
                 }
             };
@@ -74,7 +72,6 @@ namespace ClinicaSePrice.Forms
                     Filtrar(txtBuscar.Text);
             };
 
-            // ===== DataGridView =====
             dgvPacientes = new DataGridView
             {
                 Location = new Point(40, 110),
@@ -85,13 +82,13 @@ namespace ClinicaSePrice.Forms
                 AutoGenerateColumns = false,
                 BackgroundColor = Color.White
             };
-            dgvPacientes.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Nombre", DataPropertyName = "Nombre", Width = 150 });
-            dgvPacientes.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Apellido", DataPropertyName = "Apellido", Width = 150 });
-            dgvPacientes.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "DNI", DataPropertyName = "Dni", Width = 90 });
-            dgvPacientes.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Email", DataPropertyName = "Email", Width = 180 });
-            dgvPacientes.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Teléfono", DataPropertyName = "Telefono", Width = 100 });
 
-            // ===== Botones =====
+            dgvPacientes.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Nombre", DataPropertyName = "Nombre", Width = 140 });
+            dgvPacientes.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Apellido", DataPropertyName = "Apellido", Width = 140 });
+            dgvPacientes.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "DNI", DataPropertyName = "Dni", Width = 100 });
+            dgvPacientes.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Email", DataPropertyName = "Email", Width = 180 });
+            dgvPacientes.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Teléfono", DataPropertyName = "Telefono", Width = 120 });
+
             btnNuevo = CrearBoton("Nuevo", 40, 380, Color.FromArgb(0, 150, 90));
             btnNuevo.Click += BtnNuevo_Click;
 
@@ -104,7 +101,6 @@ namespace ClinicaSePrice.Forms
             btnCerrar = CrearBoton("Cerrar", 490, 380, Color.Gray);
             btnCerrar.Click += (s, e) => Close();
 
-            // ===== Controles =====
             Controls.AddRange(new Control[] { lblTitulo, txtBuscar, dgvPacientes, btnNuevo, btnEditar, btnEliminar, btnCerrar });
         }
 
@@ -121,8 +117,6 @@ namespace ClinicaSePrice.Forms
                 Cursor = Cursors.Hand
             };
             boton.FlatAppearance.BorderSize = 0;
-            boton.MouseEnter += (s, e) => boton.BackColor = ControlPaint.Light(color);
-            boton.MouseLeave += (s, e) => boton.BackColor = color;
             return boton;
         }
 
@@ -134,15 +128,8 @@ namespace ClinicaSePrice.Forms
 
         private void Filtrar(string texto)
         {
-            if (string.IsNullOrWhiteSpace(texto))
-            {
-                dgvPacientes.DataSource = pacientes.ToList();
-                return;
-            }
+            texto = texto?.ToLower() ?? "";
 
-            texto = texto.ToLower();
-
-            dgvPacientes.DataSource = null;
             dgvPacientes.DataSource = pacientes
                 .Where(p =>
                     (!string.IsNullOrEmpty(p.Nombre) && p.Nombre.ToLower().Contains(texto)) ||
@@ -150,149 +137,80 @@ namespace ClinicaSePrice.Forms
                 .ToList();
         }
 
-
         private void BtnNuevo_Click(object sender, EventArgs e)
         {
-            var form = new Form
-            {
-                Text = "Alta de Paciente",
-                Size = new Size(400, 420),
-                StartPosition = FormStartPosition.CenterParent,
-                BackColor = Color.WhiteSmoke,
-                Font = new Font("Segoe UI", 10F)
-            };
-
-            var lblNombre = new Label { Text = "Nombre:", Left = 20, Top = 20 };
-            var txtNombre = new TextBox { Left = 120, Top = 18, Width = 230 };
-
-            var lblApellido = new Label { Text = "Apellido:", Left = 20, Top = 60 };
-            var txtApellido = new TextBox { Left = 120, Top = 58, Width = 230 };
-
-            var lblDni = new Label { Text = "DNI:", Left = 20, Top = 100 };
-            var txtDni = new TextBox { Left = 120, Top = 98, Width = 230 };
-
-            var lblFecha = new Label { Text = "Fecha Nac.:", Left = 20, Top = 140 };
-            var dtpFecha = new DateTimePicker
-            {
-                Left = 120,
-                Top = 136,
-                Width = 230,
-                Format = DateTimePickerFormat.Short
-            };
-
-            var lblTel = new Label { Text = "Teléfono:", Left = 20, Top = 180 };
-            var txtTel = new TextBox { Left = 120, Top = 178, Width = 230 };
-
-            var lblMail = new Label { Text = "Email:", Left = 20, Top = 220 };
-            var txtMail = new TextBox { Left = 120, Top = 218, Width = 230 };
-
-            var lblObra = new Label { Text = "Obra Social:", Left = 20, Top = 260 };
-            var txtObra = new TextBox { Left = 120, Top = 258, Width = 230 };
-
-            var btnOk = new Button
-            {
-                Text = "Guardar",
-                Left = 180,
-                Top = 320,
-                Size = new Size(90, 35),
-                BackColor = Color.FromArgb(0, 150, 90),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                DialogResult = DialogResult.OK
-            };
-            btnOk.FlatAppearance.BorderSize = 0;
-
-            var btnCancel = new Button
-            {
-                Text = "Cancelar",
-                Left = 280,
-                Top = 320,
-                Size = new Size(90, 35),
-                BackColor = Color.Gray,
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                DialogResult = DialogResult.Cancel
-            };
-            btnCancel.FlatAppearance.BorderSize = 0;
-
-            form.Controls.AddRange(new Control[]
-            {
-        lblNombre, txtNombre,
-        lblApellido, txtApellido,
-        lblDni, txtDni,
-        lblFecha, dtpFecha,
-        lblTel, txtTel,
-        lblMail, txtMail,
-        lblObra, txtObra,
-        btnOk, btnCancel
-            });
-
-            form.AcceptButton = btnOk;
-            form.CancelButton = btnCancel;
-
-            if (form.ShowDialog() == DialogResult.OK)
-            {
-                if (string.IsNullOrWhiteSpace(txtNombre.Text) ||
-                    string.IsNullOrWhiteSpace(txtApellido.Text) ||
-                    string.IsNullOrWhiteSpace(txtDni.Text))
-                {
-                    MessageBox.Show("Debe completar los campos obligatorios (Nombre, Apellido, DNI).",
-                        "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                var nuevo = new Paciente
-                {
-                    Nombre = txtNombre.Text.Trim(),
-                    Apellido = txtApellido.Text.Trim(),
-                    Dni = txtDni.Text.Trim(),
-                    FechaNacimiento = dtpFecha.Value,
-                    Telefono = txtTel.Text.Trim(),
-                    Email = txtMail.Text.Trim(),
-                    ObraSocial = txtObra.Text.Trim()
-                };
-
-                DataStore.Pacientes.Add(nuevo);
-                CargarTabla();
-
-                MessageBox.Show("Paciente agregado correctamente.", "Éxito",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
+            var alta = new AltaPacienteForm();
+            alta.ShowDialog();
+            CargarTabla();
         }
-
 
         private void BtnEditar_Click(object sender, EventArgs e)
         {
             if (dgvPacientes.SelectedRows.Count == 0)
             {
-                MessageBox.Show("Debe seleccionar un paciente.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Debe seleccionar un paciente.", "Advertencia",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            var seleccionado = dgvPacientes.SelectedRows[0].DataBoundItem as Paciente;
-            if (seleccionado == null) return;
+            var paciente = dgvPacientes.SelectedRows[0].DataBoundItem as Paciente;
+            if (paciente == null) return;
 
-            var form = new Form
+            // === Ventanita propia (mini formulario interno) ===
+            Form f = new Form();
+            f.Text = "Editar Email";
+            f.StartPosition = FormStartPosition.CenterParent;
+            f.Size = new Size(360, 160);
+            f.FormBorderStyle = FormBorderStyle.FixedDialog;
+            f.MaximizeBox = false;
+            f.MinimizeBox = false;
+
+            Label lbl = new Label { Text = "Nuevo email:", Left = 15, Top = 20, AutoSize = true };
+            TextBox txt = new TextBox { Left = 15, Top = 45, Width = 300, Text = paciente.Email };
+
+            Button btnOk = new Button
             {
-                Text = "Modificar paciente",
-                Size = new Size(350, 150),
-                StartPosition = FormStartPosition.CenterParent
+                Text = "Aceptar",
+                Left = 140,
+                Top = 80,
+                Width = 80,
+                DialogResult = DialogResult.OK
             };
-            var lbl = new Label { Text = "Ingrese nuevo email:", Left = 15, Top = 20, AutoSize = true };
-            var txt = new TextBox { Left = 15, Top = 45, Width = 300, Text = seleccionado.Email };
-            var btnOk = new Button { Text = "Aceptar", Left = 160, Top = 80, DialogResult = DialogResult.OK };
-            var btnCancel = new Button { Text = "Cancelar", Left = 245, Top = 80, DialogResult = DialogResult.Cancel };
-            form.Controls.AddRange(new Control[] { lbl, txt, btnOk, btnCancel });
-            form.AcceptButton = btnOk;
-            form.CancelButton = btnCancel;
-
-            if (form.ShowDialog() == DialogResult.OK && !string.IsNullOrWhiteSpace(txt.Text))
+            Button btnCancel = new Button
             {
-                seleccionado.Email = txt.Text;
+                Text = "Cancelar",
+                Left = 230,
+                Top = 80,
+                Width = 80,
+                DialogResult = DialogResult.Cancel
+            };
+
+            f.Controls.Add(lbl);
+            f.Controls.Add(txt);
+            f.Controls.Add(btnOk);
+            f.Controls.Add(btnCancel);
+
+            f.AcceptButton = btnOk;
+            f.CancelButton = btnCancel;
+
+            if (f.ShowDialog() == DialogResult.OK)
+            {
+                // Validación básica
+                if (string.IsNullOrWhiteSpace(txt.Text) || !txt.Text.Contains("@"))
+                {
+                    MessageBox.Show("Debe ingresar un email válido.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                paciente.Email = txt.Text.Trim();
                 dgvPacientes.Refresh();
-                MessageBox.Show("Datos modificados correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                MessageBox.Show("Paciente modificado correctamente.", "Éxito",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
+
 
         private void BtnEliminar_Click(object sender, EventArgs e)
         {
@@ -303,18 +221,20 @@ namespace ClinicaSePrice.Forms
             }
 
             var seleccionado = dgvPacientes.SelectedRows[0].DataBoundItem as Paciente;
+
             if (seleccionado == null) return;
 
-            var confirm = MessageBox.Show($"¿Desea eliminar al paciente {seleccionado.Nombre} {seleccionado.Apellido}?",
-                                          "Confirmar eliminación",
-                                          MessageBoxButtons.YesNo,
-                                          MessageBoxIcon.Question);
+            var ok = MessageBox.Show(
+                $"¿Desea eliminar a {seleccionado.Nombre} {seleccionado.Apellido}?",
+                "Confirmar eliminación",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
 
-            if (confirm == DialogResult.Yes)
+            if (ok == DialogResult.Yes)
             {
                 pacientes.Remove(seleccionado);
                 CargarTabla();
-                MessageBox.Show("Paciente eliminado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Paciente eliminado.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
     }
