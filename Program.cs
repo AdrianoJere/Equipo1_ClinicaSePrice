@@ -14,8 +14,7 @@ namespace ClinicaSePrice
 
             // CU01 – Iniciar sesión
             // Se abre el formulario de login como punto de entrada
-            //Application.Run(new Forms.LoginForm());
-            Application.Run(new Forms.HistoriaClinicaForm());
+            Application.Run(new Forms.LoginForm());
         }
     }
 }
