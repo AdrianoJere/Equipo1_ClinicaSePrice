@@ -389,9 +389,9 @@ namespace ClinicaSePrice.Forms
                 return;
             }
 
-            if (vm.Ref.FechaHora > DateTime.Now)
+            if (vm.Ref.FechaHora > DateTime.Now.AddHours(1))
             {
-                MessageBox.Show("No puede acreditar un turno antes de la hora programada.",
+                MessageBox.Show("No puede acreditar un turno con mas de una hora de anterioridad de la hora programada.",
                     "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
