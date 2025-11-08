@@ -49,7 +49,6 @@ namespace ClinicaSePrice.Forms
                 BackgroundColor = Color.White
             };
             dgv.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "Nombre", HeaderText = "Nombre", Width = 150 });
-            dgv.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "Apellido", HeaderText = "Apellido", Width = 150 });
             dgv.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "Especialidad", HeaderText = "Especialidad", Width = 140 });
             dgv.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "Matricula", HeaderText = "Matrícula", Width = 100 });
             dgv.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "Email", HeaderText = "Email", Width = 150 });
@@ -96,7 +95,6 @@ namespace ClinicaSePrice.Forms
                 .Select(p => new
                 {
                     p.Nombre,
-                    p.Apellido,
                     p.Especialidad,
                     p.Matricula,
                     p.Email,
@@ -132,25 +130,22 @@ namespace ClinicaSePrice.Forms
                 var lblNom = new Label { Text = "Nombre:", Left = 40, Top = 70 };
                 var txtNom = new TextBox { Left = 150, Top = 66, Width = 230, Text = p?.Nombre ?? "" };
 
-                var lblApe = new Label { Text = "Apellido:", Left = 40, Top = 110 };
-                var txtApe = new TextBox { Left = 150, Top = 106, Width = 230, Text = p?.Apellido ?? "" };
+                var lblEsp = new Label { Text = "Especialidad:", Left = 40, Top = 110 };
+                var txtEsp = new TextBox { Left = 150, Top = 106, Width = 230, Text = p?.Especialidad ?? "" };
 
-                var lblEsp = new Label { Text = "Especialidad:", Left = 40, Top = 150 };
-                var txtEsp = new TextBox { Left = 150, Top = 146, Width = 230, Text = p?.Especialidad ?? "" };
+                var lblMat = new Label { Text = "Matrícula:", Left = 40, Top = 150 };
+                var txtMat = new TextBox { Left = 150, Top = 146, Width = 230, Text = p?.Matricula ?? "" };
 
-                var lblMat = new Label { Text = "Matrícula:", Left = 40, Top = 190 };
-                var txtMat = new TextBox { Left = 150, Top = 186, Width = 230, Text = p?.Matricula ?? "" };
-
-                var lblMail = new Label { Text = "Email:", Left = 40, Top = 230 };
-                var txtMail = new TextBox { Left = 150, Top = 226, Width = 230, Text = p?.Email ?? "" };
+                var lblMail = new Label { Text = "Email:", Left = 40, Top = 190 };
+                var txtMail = new TextBox { Left = 150, Top = 186, Width = 230, Text = p?.Email ?? "" };
 
                 // ===== NUEVO BLOQUE: selección de horarios =====
-                var lblHor = new Label { Text = "Horario:", Left = 40, Top = 270 };
+                var lblHor = new Label { Text = "Horario:", Left = 40, Top = 230 };
 
                 var cboDia = new ComboBox
                 {
                     Left = 150,
-                    Top = 266,
+                    Top = 226,
                     Width = 120,
                     DropDownStyle = ComboBoxStyle.DropDownList
                 };
@@ -160,7 +155,7 @@ namespace ClinicaSePrice.Forms
                 var dtDesde = new DateTimePicker
                 {
                     Left = 280,
-                    Top = 266,
+                    Top = 226,
                     Format = DateTimePickerFormat.Time,
                     ShowUpDown = true,
                     Width = 70
@@ -168,7 +163,7 @@ namespace ClinicaSePrice.Forms
                 var dtHasta = new DateTimePicker
                 {
                     Left = 360,
-                    Top = 266,
+                    Top = 226,
                     Format = DateTimePickerFormat.Time,
                     ShowUpDown = true,
                     Width = 70
@@ -177,7 +172,7 @@ namespace ClinicaSePrice.Forms
                 var lstHorarios = new ListBox
                 {
                     Left = 150,
-                    Top = 300,
+                    Top = 270,
                     Width = 280,
                     Height = 60
                 };
@@ -189,7 +184,7 @@ namespace ClinicaSePrice.Forms
                 {
                     Text = "+",
                     Left = 40,
-                    Top = 300,
+                    Top = 270,
                     Size = new Size(80, 30),
                     BackColor = Color.FromArgb(0, 150, 90),
                     ForeColor = Color.White,
@@ -232,7 +227,7 @@ namespace ClinicaSePrice.Forms
 
                 f.Controls.AddRange(new Control[]
                 {
-            lblT, lblNom, txtNom, lblApe, txtApe, lblEsp, txtEsp, lblMat, txtMat,
+            lblT, lblNom, txtNom, lblEsp, txtEsp, lblMat, txtMat,
             lblMail, txtMail, lblHor, cboDia, dtDesde, dtHasta, lstHorarios, btnAddHorario, btnOk, btnCan
                 });
                 f.AcceptButton = btnOk;
@@ -242,7 +237,6 @@ namespace ClinicaSePrice.Forms
                 {
                     // VALIDAR CAMPOS
                     if (string.IsNullOrWhiteSpace(txtNom.Text) ||
-                        string.IsNullOrWhiteSpace(txtApe.Text) ||
                         string.IsNullOrWhiteSpace(txtEsp.Text) ||
                         string.IsNullOrWhiteSpace(txtMat.Text) ||
                         string.IsNullOrWhiteSpace(txtMail.Text))
@@ -252,13 +246,6 @@ namespace ClinicaSePrice.Forms
                         return;
                     }
 
-                    // Solo letras
-                    if (!txtNom.Text.All(char.IsLetter) || !txtApe.Text.All(char.IsLetter))
-                    {
-                        MessageBox.Show("Nombre y apellido solo pueden contener letras.",
-                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
 
                     // Email válido
                     if (!txtMail.Text.Contains("@") || !txtMail.Text.Contains("."))
@@ -283,7 +270,6 @@ namespace ClinicaSePrice.Forms
                         DataStore.Profesionales.Add(new Profesional
                         {
                             Nombre = txtNom.Text.Trim(),
-                            Apellido = txtApe.Text.Trim(),
                             Especialidad = txtEsp.Text.Trim(),
                             Matricula = txtMat.Text.Trim(),
                             Email = txtMail.Text.Trim(),
@@ -293,7 +279,6 @@ namespace ClinicaSePrice.Forms
                     else
                     {
                         p.Nombre = txtNom.Text.Trim();
-                        p.Apellido = txtApe.Text.Trim();
                         p.Especialidad = txtEsp.Text.Trim();
                         p.Matricula = txtMat.Text.Trim();
                         p.Email = txtMail.Text.Trim();
@@ -333,7 +318,7 @@ namespace ClinicaSePrice.Forms
             var nombre = dgv.SelectedRows[0].Cells[0].Value.ToString();
             var p = DataStore.Profesionales.FirstOrDefault(x => x.Nombre == nombre);
 
-            var ok = MessageBox.Show($"¿Eliminar a {p?.Nombre} {p?.Apellido}?", "Confirmar",
+            var ok = MessageBox.Show($"¿Eliminar a {p?.Nombre}?", "Confirmar",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             if (ok == DialogResult.Yes && p != null)
