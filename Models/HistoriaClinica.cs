@@ -4,6 +4,7 @@ namespace ClinicaSePrice.Models
 {
     public class HistoriaClinica
     {
+        public int Id { get; set; }
         public DateTime FechaAtencion { get; set; }
         public Paciente Paciente { get; set; }
         public Profesional Profesional { get; set; }

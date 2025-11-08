@@ -46,6 +46,7 @@ namespace ClinicaSePrice.Services
 
         public static void AgregarRegistro(
             Paciente paciente,
+            Profesional profesional,
             DateTime fechaAtencion,
             string motivo,
             string diagnostico,
@@ -57,6 +58,7 @@ namespace ClinicaSePrice.Services
             DataStore.Historias.Add(new HistoriaClinica
             {
                 Paciente = paciente,
+                Profesional = profesional,
                 FechaAtencion = fechaAtencion,
                 Motivo = motivo,
                 Diagnostico = diagnostico,
