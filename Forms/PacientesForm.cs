@@ -87,7 +87,9 @@ namespace ClinicaSePrice.Forms
             dgvPacientes.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Apellido", DataPropertyName = "Apellido", Width = 140 });
             dgvPacientes.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "DNI", DataPropertyName = "Dni", Width = 100 });
             dgvPacientes.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Email", DataPropertyName = "Email", Width = 180 });
-            dgvPacientes.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Teléfono", DataPropertyName = "Telefono", Width = 120 });
+            dgvPacientes.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Teléfono", DataPropertyName = "Telefono", Width = 100 });
+            dgvPacientes.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Obra Social", DataPropertyName = "ObraSocial", Width = 100 });
+            dgvPacientes.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Fecha Nacimiento", DataPropertyName = "FechaNacimiento", Width = 100 });
 
             btnNuevo = CrearBoton("Nuevo", 40, 380, Color.FromArgb(0, 150, 90));
             btnNuevo.Click += BtnNuevo_Click;
@@ -158,52 +160,104 @@ namespace ClinicaSePrice.Forms
 
             // === Ventanita propia (mini formulario interno) ===
             Form f = new Form();
-            f.Text = "Editar Email";
+            f.Text = "Editar Paciente";
             f.StartPosition = FormStartPosition.CenterParent;
-            f.Size = new Size(360, 160);
+            f.Size = new Size(400, 400);
             f.FormBorderStyle = FormBorderStyle.FixedDialog;
             f.MaximizeBox = false;
             f.MinimizeBox = false;
 
-            Label lbl = new Label { Text = "Nuevo email:", Left = 15, Top = 20, AutoSize = true };
-            TextBox txt = new TextBox { Left = 15, Top = 45, Width = 300, Text = paciente.Email };
+            // Labels and TextBoxes for each field
+            Label lblNombre = new Label { Text = "Nombre:", Left = 15, Top = 20, AutoSize = true };
+            TextBox txtNombre = new TextBox { Left = 150, Top = 15, Width = 200, Text = paciente.Nombre };
 
+            Label lblApellido = new Label { Text = "Apellido:", Left = 15, Top = 60, AutoSize = true };
+            TextBox txtApellido = new TextBox { Left = 150, Top = 55, Width = 200, Text = paciente.Apellido };
+
+            Label lblDni = new Label { Text = "DNI:", Left = 15, Top = 100, AutoSize = true };
+            TextBox txtDni = new TextBox { Left = 150, Top = 95, Width = 200, Text = paciente.Dni };
+
+            Label lblTelefono = new Label { Text = "Teléfono:", Left = 15, Top = 140, AutoSize = true };
+            TextBox txtTelefono = new TextBox { Left = 150, Top = 135, Width = 200, Text = paciente.Telefono };
+
+            Label lblFechaNacimiento = new Label { Text = "Fecha de Nacimiento:", Left = 15, Top = 180, AutoSize = true };
+            DateTimePicker dtpFechaNacimiento = new DateTimePicker
+            {
+                Left = 150,
+                Top = 175,
+                Width = 200,
+                Format = DateTimePickerFormat.Short,
+                Value = paciente.FechaNacimiento
+            };
+
+            Label lblObraSocial = new Label { Text = "Obra Social:", Left = 15, Top = 220, AutoSize = true };
+            TextBox txtObraSocial = new TextBox { Left = 150, Top = 215, Width = 200, Text = paciente.ObraSocial };
+
+            Label lblEmail = new Label { Text = "Email:", Left = 15, Top = 260, AutoSize = true };
+            TextBox txtEmail = new TextBox { Left = 150, Top = 255, Width = 200, Text = paciente.Email };
+
+            // Buttons
             Button btnOk = new Button
             {
                 Text = "Aceptar",
-                Left = 140,
-                Top = 80,
+                Left = 150,
+                Top = 300,
                 Width = 80,
                 DialogResult = DialogResult.OK
             };
             Button btnCancel = new Button
             {
                 Text = "Cancelar",
-                Left = 230,
-                Top = 80,
+                Left = 240,
+                Top = 300,
                 Width = 80,
                 DialogResult = DialogResult.Cancel
             };
 
-            f.Controls.Add(lbl);
-            f.Controls.Add(txt);
-            f.Controls.Add(btnOk);
-            f.Controls.Add(btnCancel);
+            // Add controls to the form
+            f.Controls.AddRange(new Control[]
+            {
+        lblNombre, txtNombre,
+        lblApellido, txtApellido,
+        lblDni, txtDni,
+        lblTelefono, txtTelefono,
+        lblFechaNacimiento, dtpFechaNacimiento,
+        lblObraSocial, txtObraSocial,
+        lblEmail, txtEmail,
+        btnOk, btnCancel
+            });
 
             f.AcceptButton = btnOk;
             f.CancelButton = btnCancel;
 
+            // Show the form and handle the result
             if (f.ShowDialog() == DialogResult.OK)
             {
-                // Validación básica
-                if (string.IsNullOrWhiteSpace(txt.Text) || !txt.Text.Contains("@"))
+                // Validate inputs (basic validation)
+                if (string.IsNullOrWhiteSpace(txtNombre.Text) || string.IsNullOrWhiteSpace(txtApellido.Text))
                 {
-                    MessageBox.Show("Debe ingresar un email válido.", "Error",
+                    MessageBox.Show("El nombre y apellido son obligatorios.", "Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
-                paciente.Email = txt.Text.Trim();
+                if (!DateTime.TryParse(dtpFechaNacimiento.Text, out DateTime fechaNacimiento))
+                {
+                    MessageBox.Show("La fecha de nacimiento no es válida.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // Update the paciente object
+                paciente.Nombre = txtNombre.Text.Trim();
+                paciente.Apellido = txtApellido.Text.Trim();
+                paciente.Dni = txtDni.Text.Trim();
+                paciente.Telefono = txtTelefono.Text.Trim();
+                paciente.FechaNacimiento = fechaNacimiento;
+                paciente.ObraSocial = txtObraSocial.Text.Trim();
+                paciente.Email = txtEmail.Text.Trim();
+
+                // Refresh the DataGridView
                 dgvPacientes.Refresh();
 
                 MessageBox.Show("Paciente modificado correctamente.", "Éxito",

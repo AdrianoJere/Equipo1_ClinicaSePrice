@@ -16,6 +16,8 @@ namespace ClinicaSePrice.Models
         public int Edad => DateTime.Today.Year - FechaNacimiento.Year -
                            (DateTime.Today.DayOfYear < FechaNacimiento.DayOfYear ? 1 : 0);
 
+        public string NombreCompleto => $"{Nombre} {Apellido}";
+
         public override string ToString()
         {
             return $"{Nombre} ({Dni})";

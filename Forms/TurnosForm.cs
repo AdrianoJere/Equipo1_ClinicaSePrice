@@ -31,6 +31,7 @@ namespace ClinicaSePrice.Forms
             public DateTime FechaHora { get; set; }
             public string Estado { get; set; }
             public string PacienteNombre { get; set; }
+            public string PacienteNombreCompleto { get; set; }
             public string ProfesionalNombre { get; set; }
             public string Observaciones { get; set; }
             public Turno Ref { get; set; }   // <- referencia al Turno original
@@ -251,7 +252,7 @@ namespace ClinicaSePrice.Forms
         {
             // Alta
             cboPaciente.DataSource = DataStore.Pacientes.ToList();
-            cboPaciente.DisplayMember = "Nombre";
+            cboPaciente.DisplayMember = "NombreCompleto";
             cboProfesional.DataSource = DataStore.Profesionales.ToList();
             cboProfesional.DisplayMember = "Nombre";
 
@@ -291,7 +292,7 @@ namespace ClinicaSePrice.Forms
                 {
                     FechaHora = t.FechaHora,
                     Estado = t.Estado,
-                    PacienteNombre = t.Paciente != null ? t.Paciente.Nombre : "",
+                    PacienteNombre = t.Paciente != null ? t.Paciente.NombreCompleto : "",
                     ProfesionalNombre = t.Profesional != null ? t.Profesional.Nombre : "",
                     Observaciones = t.Observaciones,
                     Ref = t
